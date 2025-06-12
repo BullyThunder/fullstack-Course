@@ -2,7 +2,9 @@ const express = require('express');
 const app = express();
 const notesRouter = require('./routes/notes.js');
 const personsRouter = require('./routes/persons.js');
-const logger = require('./middleware/logger.js')
+const logger = require('./middleware/logger.js');
+const cors = require('cors')
+app.use(cors()) // Разрешить ВСЕ запросы
 app.use(express.json());
 app.use(logger);
   app.get('/', (request, response) => {
@@ -10,7 +12,7 @@ app.use(logger);
 })
 app.use('/api/notes', notesRouter);
 app.use('/api/persons', personsRouter);
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
