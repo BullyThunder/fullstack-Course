@@ -10,6 +10,7 @@ app.use(logger);
   app.get('/', (request, response) => {
   response.send('<h1>Hi!</h1>')
 })
+app.use(express.static('dist'))
 app.use('/api/notes', notesRouter);
 app.use('/api/persons', personsRouter);
 const PORT = process.env.PORT || 3001;
