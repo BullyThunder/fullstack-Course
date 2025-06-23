@@ -1,7 +1,7 @@
  let notes = require('../data/notes.js')
 const generateId = require('../utils/generate_id.js');
 const express = require('express');
-let router = express.Router();
+const router = express.Router();
 router.get('/',(request, response)=>{
   response.json(notes);
 })

@@ -19,8 +19,7 @@ app.use('/api/persons', personsRouter);
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // 💡 ВСЕ остальные маршруты — отдать index.html (фронтэнд)
-app.get('*', (req, res) => {
-  console.log('Serving index.html for:', req.originalUrl);
+app.get(/^\/(?!api).*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
