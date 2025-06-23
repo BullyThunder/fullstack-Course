@@ -34,7 +34,7 @@ router.post('/',(request,response)=>{
 
 router.delete('/:id', (request, response) => {
   const id = request.params.id;
-  const notes =  notes.filter(note => note.id !== id)
+   notes =  notes.filter(note => note.id !== id)
   response.status(204).end()
 })
 
