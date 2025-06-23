@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const path = require('path'); 
 const notesRouter = require('./routes/notes.js');
 const personsRouter = require('./routes/persons.js');
 const logger = require('./middleware/logger.js');
@@ -10,7 +11,7 @@ app.use(logger);
   app.get('/', (request, response) => {
   response.send('<h1>Hi!</h1>')
 })
-app.use(express.static('dist'))
+app.use(express.static(path.join(__dirname, 'dist')));
 app.use('/api/notes', notesRouter);
 app.use('/api/persons', personsRouter);
 const PORT = process.env.PORT || 3001;
