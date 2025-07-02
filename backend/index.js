@@ -1,7 +1,8 @@
+require('dotenv').config();
 const path = require('path');
+const mongoose = require('mongoose');
 const express = require('express');
 const app = express();
-
 const notesRouter = require('./routes/notes.js');
 const personsRouter = require('./routes/persons.js');
 const logger = require('./middleware/logger.js');
@@ -12,7 +13,16 @@ app.use(express.json());
 app.use(logger);
 
 
+const url = process.env.MONGODB_URI
 
+mongoose.set('strictQuery', false)
+mongoose.connect(url)
+  .then(() => {
+    console.log('connected to MongoDB')
+  })
+  .catch((error) => {
+    console.error('error connecting to MongoDB:', error.message)
+  })
 app.use('/api/notes', notesRouter);
 app.use('/api/persons', personsRouter);
 

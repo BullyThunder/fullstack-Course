@@ -1,9 +1,15 @@
- let notes = require('../data/notes.js')
+let notes = require('../data/notes.js')
+const Note = require('../src/db/notes.js') // Mongoose модель
 const generateId = require('../utils/generate_id.js');
 const express = require('express');
 const router = express.Router();
 router.get('/',(request, response)=>{
   response.json(notes);
+})
+router.get('/notes', (request, response)=>{
+   Note.find({}).then(notes => {
+    response.json(notes)
+  })
 })
 router.get('/:id', (request, response) => {
   const id = request.params.id;
