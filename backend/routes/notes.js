@@ -1,25 +1,30 @@
-let notes = require('../data/notes.js')
-const Note = require('../src/db/notes.js') // Mongoose модель
+const Note = require('../src/models/notes.js') // Mongoose модель
 const generateId = require('../utils/generate_id.js');
 const express = require('express');
 const router = express.Router();
-router.get('/',(request, response)=>{
-  response.json(notes);
-})
-router.get('/notes', (request, response)=>{
-   Note.find({}).then(notes => {
-    response.json(notes)
-  })
-})
+router.get('/', (req, res) => {
+  Note.find({})
+    .then(notes => {
+      res.json(notes);
+    })
+    .catch(error => {
+      res.status(500).json({ error: 'Ошибка при получении заметок' });
+    });
+});
 router.get('/:id', (request, response) => {
   const id = request.params.id;
-  const note =  notes.find(note => note.id === id)
-  if(note){
+  Note.findById(id)
+  .then(note=>{
+    if(note){
     response.json(note)
+    }
+     else{
+    request.status(404).end
   }
- else{
-  response.status(404).end()
- }
+  })
+  .catch(error => {
+    response.status(400).json({ error: 'Неверный формат id' });
+  })
 })
 router.post('/',(request,response)=>{
   const body = request.body;
@@ -33,15 +38,24 @@ router.post('/',(request,response)=>{
     important: body.important || false,
     id: generateId()
   }
-  notes = [...notes,note];
-  console.log(note)
-  response.json(note) 
+  note.save()
+  .then(savedNote=>{
+    response.json(savedNote)
+  })
+  .catch(error=>{
+    response.status(500).json({ error: 'Error saved note' });
+  })
 })
 
 router.delete('/:id', (request, response) => {
   const id = request.params.id;
-   notes =  notes.filter(note => note.id !== id)
-  response.status(204).end()
+  Note.findByIdAndRemove(id)
+  .then(()=>{
+     response.status(204).end();
+  })
+  .catch(error =>{
+    response.status(400).json({ error: 'Неверный формат id' });
+  })
 })
 
 module.exports = router;
