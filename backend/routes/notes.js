@@ -1,5 +1,4 @@
 const Note = require('../src/models/notes.js') // Mongoose модель
-const generateId = require('../utils/generate_id.js');
 const express = require('express');
 const router = express.Router();
 router.get('/', (req, res) => {
@@ -33,11 +32,10 @@ router.post('/',(request,response)=>{
       error: 'content missing' 
     })
   }
-  const note = { 
+  const note = new Note ({ 
     content: body.content,
     important: body.important || false,
-    id: generateId()
-  }
+  });
   note.save()
   .then(savedNote=>{
     response.json(savedNote)
