@@ -1,4 +1,5 @@
 const Note = require('../src/models/notes.js') // Mongoose модель
+const errorHandler = require('../middleware/errorHandler.js')
 const express = require('express');
 const router = express.Router();
 router.get('/', (req, res) => {
@@ -18,11 +19,12 @@ router.get('/:id', (request, response) => {
     response.json(note)
     }
      else{
-    request.status(404).end
+    request.status(404).end()
   }
   })
   .catch(error => {
-    response.status(400).json({ error: 'Неверный формат id' });
+    console.log(error);
+    response.status(400).json({ error: 'Invalid note format' });
   })
 })
 router.post('/',(request,response)=>{
