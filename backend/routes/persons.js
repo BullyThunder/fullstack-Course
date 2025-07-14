@@ -1,14 +1,15 @@
 const Person = require('../src/models/persons.js');
 let express = require('express');
+const mongoose = require('mongoose');
 const router = express.Router();
-router.get('/', (request, response) => {
+router.get('/', (request, response,next) => {
     Person.find({})
     .then(person=>{
       response.json(person)
     })
      .catch(error => {
-      response.status(500).json({ error: 'Error for download persons' });
-    });
+   next(error);
+  })
  })
 router.get('/info', (request, response) => {
     const date = new Date();
@@ -20,7 +21,7 @@ router.get('/info', (request, response) => {
   
 })
 });
-router.get('/:id',(request,response)=>{
+router.get('/:id',(request,response,next)=>{
   const id = request.params.id
   Person.findById(id).
   then(person=>{
@@ -32,38 +33,72 @@ router.get('/:id',(request,response)=>{
  }
 })
 .catch(error => {
-    response.status(400).json({ error: 'Неверный формат id' });
+   next(error);
   })
 })
-router.delete('/:id',(request,response)=>{
+router.delete('/:id', (request, response,next) => {
   const id = request.params.id;
-  Person.findByIdAndRemove(id)
-  .then(()=>{
-    response.status(204).end()
+  console.log('Received DELETE request for id:', `'${id}'`);
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    console.log('Invalid ObjectId format');
+    return response.status(400).json({ error: 'malformatted id' });
+  }
+
+  Person.findByIdAndDelete(id)
+    .then((result) => {
+      if (!result) {
+        console.log('No person found with id:', id);
+        return response.status(404).json({ error: 'person not found' });
+      }
+      console.log('Person deleted:', result);
+      response.status(204).end();
     })
-  .catch(()=>{
-    response.status(404).json({ error: 'Invalid id format' });
-  })  
-})
-router.post('/',(request, response)=>{
- let body = request.body;
-if (!body.name || !body.number) {
+   .catch(error => {
+   next(error);
+  })
+});
+
+router.post('/',(request, response,next)=>{
+ const {name, number} = request.body;
+if (!name || !number) {
   return response.status(400).json({ 
     error: 'name or number missing' 
   });
 }
-  
- const person = new Person({
-    name: body.name, 
-    number: body.number
+Person.findOne({number})
+.then(exisitingPersons =>{
+  if(exisitingPersons){
+     return response.status(400).json({ 
+    error: 'number already used' 
+  });
+  }
+  return Person.findOne({name})
+})
+.then(exisitingPersons=>{
+  if(exisitingPersons){
+  return Person.findByIdAndUpdate(
+      exisitingPersons._id,
+    {number},
+    { new: true, runValidators: true, context: 'query' }
+  )
+  .then(updatedPerson=>{
+      response.json(updatedPerson)
   })
-  person.save()
+  .catch(error=>next(error))
+  }
+  else{
+    const person = new Person({
+    name: name, 
+    number: number
+  })
+  person
+  .save()
   .then(savePersons=>{
      response.json(savePersons)
   })
-  .catch(error=>{
-     response.status(500).json({ error: 'Error saved person' });
-});
+}
+})
 })
 
 module.exports = router;

@@ -7,7 +7,7 @@ const cors = require('cors')
 const notesRouter = require('./routes/notes')
 const personsRouter = require('./routes/persons')
 const logger = require('./middleware/logger')
-
+const errorHandler = require('./middleware/errorHandler')
 const app = express()
 
 // Middleware
@@ -38,5 +38,5 @@ app.use(express.static(path.join(__dirname, 'dist')))
 app.get(/^\/(?!api).*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'))
 })
-
+app.use(errorHandler);
 module.exports = app

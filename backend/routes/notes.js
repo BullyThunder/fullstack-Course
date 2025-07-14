@@ -1,5 +1,4 @@
 const Note = require('../src/models/notes.js') // Mongoose модель
-const errorHandler = require('../middleware/errorHandler.js')
 const express = require('express');
 const router = express.Router();
 router.get('/', (req, res) => {
@@ -7,11 +6,9 @@ router.get('/', (req, res) => {
     .then(notes => {
       res.json(notes);
     })
-    .catch(error => {
-      res.status(500).json({ error: 'Ошибка при получении заметок' });
-    });
+   .catch(error => next(error))
 });
-router.get('/:id', (request, response) => {
+router.get('/:id', (request, response,next) => {
   const id = request.params.id;
   Note.findById(id)
   .then(note=>{
@@ -23,8 +20,7 @@ router.get('/:id', (request, response) => {
   }
   })
   .catch(error => {
-    console.log(error);
-    response.status(400).json({ error: 'Invalid note format' });
+   next(error);
   })
 })
 router.post('/',(request,response)=>{
@@ -42,9 +38,7 @@ router.post('/',(request,response)=>{
   .then(savedNote=>{
     response.json(savedNote)
   })
-  .catch(error=>{
-    response.status(500).json({ error: 'Error saved note' });
-  })
+ .catch(error => next(error))
 })
 
 router.delete('/:id', (request, response) => {
@@ -53,9 +47,7 @@ router.delete('/:id', (request, response) => {
   .then(()=>{
      response.status(204).end();
   })
-  .catch(error =>{
-    response.status(400).json({ error: 'Неверный формат id' });
-  })
+  .catch(error => next(error))
 })
 
 module.exports = router;
