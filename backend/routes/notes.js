@@ -1,4 +1,6 @@
+
 const Note = require('../src/models/notes.js') // Mongoose модель
+const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 router.get('/', (req, res) => {
@@ -23,7 +25,7 @@ router.get('/:id', (request, response,next) => {
    next(error);
   })
 })
-router.post('/',(request,response)=>{
+router.post('/',(request,response,next)=>{
   const body = request.body;
   if(!body.content){
     return response.status(400).json({ 
@@ -39,6 +41,23 @@ router.post('/',(request,response)=>{
     response.json(savedNote)
   })
  .catch(error => next(error))
+})
+
+router.put('/:id', (request,response,next) =>{
+  const {content,important} = request.body;
+  const id = request.params.id;
+  Note.findById(id)
+  .then(note=>{
+    if(!note){
+       response.status(404).end();
+    }
+    note.content = content;
+    note.important = important;
+    return note.save().then(savedNotes =>{
+      response.json(savedNotes)
+    })
+    .catch(error => next(error))
+  }) 
 })
 
 router.delete('/:id', (request, response) => {
