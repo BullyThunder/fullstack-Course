@@ -5,7 +5,8 @@ const errorHandler = (error, request, response, next) =>{
          return response.status(400).json({ error: 'malformatted id' });
     }
     else if(error.name === 'ValidationError'){
-         return response.status(400).json({ error: error.message })
+          const messages = Object.values(error.errors).map(e => e.message)
+        return response.status(400).json({ error: messages.join(', ') });
     }
     next(error);
 }
