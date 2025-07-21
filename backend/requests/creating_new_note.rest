@@ -2,7 +2,7 @@ POST http://localhost:3001/api/notes
 Content-Type: application/json
 
 {
-    "content": "Vs code vvfdvdfvfd",
+    "content": "Vsfм",
     "important": true
 }
 ###
@@ -11,6 +11,6 @@ POST http://localhost:3001/api/persons
 Content-Type: application/json
 
 {
-    "name": "Ada Lovelac",
-    "number": "040-123456"
+    "name": "Ar",
+    "number": "040-7683279859808"
 }
