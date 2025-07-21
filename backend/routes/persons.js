@@ -97,8 +97,10 @@ Person.findOne({number})
   .then(savePersons=>{
      response.json(savePersons)
   })
+  .catch(error => next(error));
 }
 })
+.catch(error => next(error));
 })
 
 module.exports = router;
